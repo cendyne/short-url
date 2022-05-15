@@ -1,0 +1,20 @@
+name = "short-url"
+main = "src/index.ts"
+compatibility_date = "2022-05-15"
+account_id = "YOUR_ACCOUNT"
+
+kv_namespaces = [
+    { binding = "URLS", id = "PREVIEW_KV_ID", preview_id = "PREVIEW_KV_ID" }
+]
+
+[env.staging]
+workers_dev = true
+kv_namespaces = [
+    { binding = "URLS", id = "STAGING_KV_ID", preview_id = "PREVIEW_KV_ID" }
+]
+
+[env.production]
+route = "YOURDOMAIN/*"
+kv_namespaces = [
+    { binding = "URLS", id = "PRODUCTION_KV_ID" }
+]
