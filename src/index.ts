@@ -20,6 +20,24 @@ function compare(a: string, b: string) {
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+async function randomPath(env: Environment): Promise<string> {
+  let writePath = '/';
+  let buf = new Uint8Array(15);
+  crypto.getRandomValues(buf);
+  writePath = '/';
+  for (let value of buf.values()) {
+    writePath += ALPHABET.charAt(value % ALPHABET.length);
+    if (writePath.length >= 4) {
+      // at least three letters after the /
+      if (!(await env.URLS.get(writePath))) {
+        // This path has not been chosen!
+        return writePath;
+      }
+    }
+  }
+  return writePath;
+} 
+
 export default {
   async fetch(request: Request, env: Environment): Promise<Response> {
     const url = new URL(request.url);
@@ -36,16 +54,9 @@ export default {
         return this.unauthenticatedRequest();
       }
       let writePath = path;
-      if (path === '/') {
+      if (path === '/' && !url.searchParams.get('root')) {
         // only let it stay '/' if there's a query for it
-        if (!url.searchParams.get('root')) {
-          let buf = new Uint8Array(8);
-          crypto.getRandomValues(buf);
-          writePath = '/';
-          for (let value of buf.values()) {
-            writePath += ALPHABET.charAt(value % ALPHABET.length);
-          }
-        }
+        writePath = await randomPath(env);
       }
       return this.putPath(url, writePath, env, text);
     } else if (request.method == "GET") {
