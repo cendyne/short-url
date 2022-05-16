@@ -7,6 +7,10 @@ wrangler secret put BEARER_TOKEN
 wrangler secret --env staging put BEARER_TOKEN
 wrangler secret --env production put BEARER_TOKEN
 
+wrangler secret put URL_SECRET
+wrangler secret --env staging put URL_SECRET
+wrangler secret --env production put URL_SECRET
+
 wrangler kv:namespace create URLS --preview
 wrangler kv:namespace --env staging create URLS
 wrangler kv:namespace --env production create URLS
